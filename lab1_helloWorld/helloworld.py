@@ -1,4 +1,4 @@
-#Lab 1 ECSE 4230: Hello World
+#ECSE 4230: Hello World
 
 #Authors: Abhi Boggavarapu, Josh Vickers, Alex Oh
 
