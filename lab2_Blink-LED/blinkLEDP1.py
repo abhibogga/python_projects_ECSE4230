@@ -13,7 +13,7 @@ pin_number = 17
 GPIO.setup(pin_number, GPIO.OUT, initial=GPIO.LOW)
 
 # Loop to turn the LED on and off
-period = .01
+period = .05
 frequency = int(1/period)
 
 print("Frequency: " + str(frequency))

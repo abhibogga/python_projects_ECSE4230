@@ -5,7 +5,8 @@ import pigpio
 pi=pigpio.pi()
 
 pin_number = 17
-frequency = 100
+frequency = 10
+
 dutyCycleValue = 255/2
 
 # Desired frequency with PWM

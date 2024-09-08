@@ -6,8 +6,9 @@ import time
 pi=pigpio.pi()
 
 pin_number = 17
-frequency = 100
+frequency = 10000
 dutyCycleValue = 255/2
+
 
 # Desired frequency with PWM
 pi.set_PWM_frequency(pin_number, frequency)
@@ -17,7 +18,7 @@ pi.set_PWM_dutycycle(pin_number, dutyCycleValue)
 
 #Handle Timing things
 startTime = time.time() #Starts clock
-interval = 10 #5 Seconds
+interval = 10 #10 Seconds
 
 # Keep the program running while the LED is blinking
 try:
@@ -25,7 +26,7 @@ try:
         currentTime = time.time() #Starts current time
 
         if (currentTime - startTime >= interval):
-            frequency += 10 #CHANGE THIS WHEN YOU WANT TO CHANGE THE FREQ INTERVAL
+            frequency += 5000 #CHANGE THIS WHEN YOU WANT TO CHANGE THE FREQ INTERVAL
             pi.set_PWM_frequency(pin_number, frequency)
             print("Frequency " + str(frequency))
             startTime = currentTime

@@ -11,7 +11,8 @@ pin_number = 17
 wiringpi.softToneCreate(pin_number)
 
 # Write the desired frequency to the pin
-frequency = 100  
+frequency = 10
+
 wiringpi.softToneWrite(pin_number, frequency)
 
 # Keep the program running while the LED is blinking

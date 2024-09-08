@@ -14,16 +14,16 @@ pin_number = 17
 GPIO.setup(pin_number, GPIO.OUT, initial=GPIO.LOW)
 
 # Loop to turn the LED on and off
-period = .1 
-startFrequency = 10
-frequency = 10
+period = .0001 
+startFrequency = 10000
+frequency = 10000
 
 
 print("Frequency: " + str(startFrequency))
 
 #Handle Timing things
 startTime = time.time() #Starts clock
-interval = 20 #10 Seconds
+interval = 10 #15 Seconds
 
 
 try:
@@ -51,7 +51,7 @@ try:
 
 
         if (currentTime - startTime >= interval):
-            frequency += 10 #CHANGE THIS WHEN YOU WANT TO CHANGE THE FREQ INTERVAL
+            frequency += 5000 #CHANGE THIS WHEN YOU WANT TO CHANGE THE FREQ INTERVAL
             period = 1/frequency
             print("Frequency " + str(frequency))
             print("Period " + str(period))

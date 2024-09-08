@@ -12,12 +12,12 @@ pin_number = 17
 wiringpi.softToneCreate(pin_number)
 
 # Write the desired frequency to the pin
-frequency = 100  
+frequency = 10000  
 wiringpi.softToneWrite(pin_number, frequency)
 
 #Handle Timing things
 startTime = time.time() #Starts clock
-interval = 5 #5 Seconds
+interval = 10 #10 Seconds
 
 
 # Keep the program running while the LED is blinking
@@ -26,7 +26,7 @@ try:
         currentTime = time.time() #Starts current time
 
         if (currentTime - startTime >= interval):
-            frequency += 10 #CHANGE THIS WHEN YOU WANT TO CHANGE THE FREQ INTERVAL
+            frequency += 5000 #CHANGE THIS WHEN YOU WANT TO CHANGE THE FREQ INTERVAL
             wiringpi.softToneWrite(pin_number, frequency)
             print("Frequency " + str(frequency))
             startTime = currentTime
