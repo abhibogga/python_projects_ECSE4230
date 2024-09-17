@@ -1,8 +1,11 @@
 #Import Libary
 import RPi.GPIO as GPIO
+from datetime import datetime
 GPIO.setmode(GPIO.BCM)
 #Define HashMap
 hash = [["1", "2", "3", "A"], ["4", "5", "6", "B"], ["7", "8", "9", "C"], ["*", "0", "#", "D"]]
+
+#Setup GPIOs for SSD
 
 #Define Rows, rows will be input: 
 Y1 = 27
@@ -30,41 +33,41 @@ GPIO.setup(X4, GPIO.OUT)
 
 def readKeypad(rowNum,char):
     curVal = ""
-    counter = False
+    pressed = False
     GPIO.output(rowNum,GPIO.HIGH)
     if (GPIO.input(Y1)==1):
         while (GPIO.input(Y1)==1):
-            if (counter):
+            if (pressed):
                 pass
             else: 
                 curVal=char[0]
                 print(curVal)
-                counter = True
+                pressed = True
         
     if (GPIO.input(Y2)==1):
         while (GPIO.input(Y2)==1):
-            if (counter):
+            if (pressed):
                 pass
             else: 
                 curVal=char[1]
                 print(curVal)
-                counter = True
+                pressed = True
     if (GPIO.input(Y3)==1):
         while (GPIO.input(Y3)==1):
-            if (counter):
+            if (pressed):
                 pass
             else: 
                 curVal=char[2]
                 print(curVal)
-                counter = True
+                pressed = True
     if (GPIO.input(Y4)==1):
         while (GPIO.input(Y4)==1):
-            if (counter):
+            if (pressed):
                 pass
             else: 
                 curVal=char[3]
                 print(curVal)
-                counter = True
+                pressed = True
     GPIO.output(rowNum,GPIO.LOW)
 
 
