@@ -3,7 +3,10 @@ import RPi.GPIO as GPIO
 from datetime import datetime
 GPIO.setmode(GPIO.BCM)
 #Define HashMap
-hash = [["1", "2", "3", "A"], ["4", "5", "6", "B"], ["7", "8", "9", "C"], ["*", "0", "#", "D"]]
+hash = [["1", "2", "3", "A"],
+        ["4", "5", "6", "B"],
+        ["7", "8", "9", "C"],
+        ["*", "0", "#", "D"]]
 
 #Setup GPIOs for SSD
 
