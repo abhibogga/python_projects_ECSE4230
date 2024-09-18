@@ -3,14 +3,14 @@ from time import sleep
 from datetime import datetime
 GPIO.setmode(GPIO.BCM)
 #Define GPIO's
-A = 19
-B = 13
+A = 11
+B = 0
 C = 6
-D = 5
-E = 0
-F = 11
-G = 16
-DOT = 12
+D = 13
+E = 19
+F = 16
+G = 12
+DOT = 5
 CLK1 = 26
 period = .005
 
