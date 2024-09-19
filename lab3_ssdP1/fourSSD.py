@@ -297,26 +297,9 @@ counter = 0
 while True: 
 
     (readKeypad(rows[counter%4], hash[counter%4]) )
-        
-
     counter+=1
+    
 
 
 
-
-
-
-
-
-
-try: 
-    while (True):
-        for i in zero:
-            GPIO.output(i, GPIO.HIGH)
-            GPIO.output(CLK1, GPIO.LOW)
-            sleep(period/2)
-            GPIO.output(CLK1, GPIO.HIGH)
-            sleep(period/2)
-except KeyboardInterrupt:
-    GPIO.cleanup()
 
