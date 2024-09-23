@@ -472,7 +472,6 @@ def fourStageLoad(stringTime, loadVals, clockMode):
 
 
 
-
 counter = 0
 #Set all ssd to 0
 loadZero(CLK1)
