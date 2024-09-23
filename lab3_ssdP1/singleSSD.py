@@ -34,7 +34,7 @@ E = 19
 F = 16
 G = 12
 DOT = 5
-CLK1 = 26
+CLK1 = 21
 period = .005
 
 rows = [2,3,4,17]
@@ -316,4 +316,3 @@ try:
             sleep(period/2)
 except KeyboardInterrupt:
     GPIO.cleanup()
-
