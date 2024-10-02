@@ -5,7 +5,10 @@ from datetime import datetime
 from collections import deque
 GPIO.setmode(GPIO.BCM)
 #Define HashMap
+#What this does it that it defines the keypad by rows
 hash = [["1", "2", "3", "A"], ["4", "5", "6", "B"], ["7", "8", "9", "C"], ["*", "0", "#", "D"]]
+
+#This is the lookup table for when we need to display something from the keypad to the SSD
 pureNumHash = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "*"]
 
 #Setup GPIOs for SSD
@@ -89,22 +92,27 @@ d = [B, C, D, E, G]
 
 clkList = [CLK1, CLK2, CLK3, CLK4]
 
-
+#Save State for when we turn the ssd off
 preVal = []
 screenState = True
 
+#Clear function to turn off all signals to GPIOS
 def clear():
     for i in everyone:
         GPIO.output(i, GPIO.LOW)
 
 
+#Array to hold all of the values inside the 4 ssds respectivly by array
 queue = []
 queueCounter = 0
-#load 0's into queue
+
+
+#load 0's into queue, when we start the program we should load 0s
 for i in range(4): 
     queue.append(0)
 
 
+#Function that is called when we need to load a number into the queue array
 def loadNums(num): 
     global queue
     global queueCounter
