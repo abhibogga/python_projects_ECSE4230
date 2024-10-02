@@ -98,7 +98,7 @@ def clear():
         GPIO.output(i, GPIO.LOW)
 
 
-queue = deque()
+queue = []
 queueCounter = 0
 #load 0's into queue
 for i in range(4): 
@@ -110,8 +110,8 @@ def loadNums(num):
     global queueCounter
     if not (num == "#"):
         #first we want to pop left
-        queue.pop()
-        queue.insert(queueCounter%4, num)
+        
+        queue[queueCounter%4] = num
         queueCounter += 1
     fourStageLoad("yomama", queue, False)
         #print(queue)
@@ -254,30 +254,25 @@ def readKeypad(rowNum,char, loadValues):
                     clear()
                     preVal = four
                     if loadValues: 
-                        loadNums(1)
-                    else: 
-                        loadOne(CLK1)     
+                        loadNums(1)    
                 elif curVal == "4":
                     clear()
                     preVal = four
                     if loadValues: 
                         loadNums(4)
-                    else: 
-                        loadFour(CLK1)
+                    
                 elif curVal == "7":
                     clear()
                     preVal = seven
                     if loadValues: 
                         loadNums(7)
-                    else: 
-                        loadSeven(CLK1)
+                    
                 elif curVal == "*":
                     clear()
                     preVal = dot
                     if loadValues: 
                         loadNums(10)
-                    else: 
-                        loadStar(CLK1)
+                    
                 
         
     if (GPIO.input(Y2)==1):
@@ -294,29 +289,25 @@ def readKeypad(rowNum,char, loadValues):
                     preVal = four
                     if loadValues: 
                         loadNums(2)
-                    else: 
-                        loadTwo(CLK1)
+                    
                 elif curVal == "5":
                     clear()
                     preVal = five
                     if loadValues: 
                         loadNums(5)
-                    else: 
-                        loadFive(CLK1)
+                    
                 elif curVal == "8":
                     clear()
                     preVal = eight
                     if loadValues: 
                         loadNums(8)
-                    else: 
-                        loadEight(CLK1)
+                    
                 elif curVal == "0":
                     clear()
                     preVal = zero
                     if loadValues: 
                         loadNums(0)
-                    else: 
-                        loadZero(CLK1)
+                    
     if (GPIO.input(Y3)==1):
         while (GPIO.input(Y3)==1):
             if (pressed):
@@ -330,22 +321,19 @@ def readKeypad(rowNum,char, loadValues):
                     preVal = three
                     if loadValues: 
                         loadNums(3)
-                    else: 
-                        loadThree(CLK1)
+                    
                 elif curVal == "6":
                     clear()
                     preVal = six
                     if loadValues: 
                         loadNums(6)
-                    else: 
-                        loadSix(CLK1)
+                    
                 elif curVal == "9":
                     clear()
                     preVal = nine
                     if loadValues: 
                         loadNums(9)
-                    else: 
-                        loadNine(CLK1)
+                    
                 elif curVal == "#": # WE NEED TO FIX THIS AT SOME POINT DO NOT FORGET!! 
                     global screenState
                     if loadValues: 
@@ -364,22 +352,27 @@ def readKeypad(rowNum,char, loadValues):
                             screenState = True
                     
                     else: 
+                        print(screenState)
                         # Manual clear
-                        if screenState:
-                            for i in everyone:
-                                GPIO.output(i, GPIO.LOW)
-                                GPIO.output(CLK1, GPIO.LOW)
-                                sleep(period/2)
-                                GPIO.output(CLK1, GPIO.HIGH)
-                                sleep(period/2)
+                        if screenState: 
+                            timeGPIO = [CLK1, CLK2, CLK3, CLK4]
+                            for j in timeGPIO: 
+                                for i in everyone:
+                                    GPIO.output(i, GPIO.LOW)
+                                    GPIO.output(j, GPIO.LOW)
+                                    sleep(period/2)
+                                    GPIO.output(j, GPIO.HIGH)
+                                    sleep(period/2)
                             screenState = False
                         else:
-                            for i in preVal:
+                            '''for i in preVal:
                                 GPIO.output(i, GPIO.HIGH)
                                 GPIO.output(CLK1, GPIO.LOW)
                                 sleep(period/2)
                                 GPIO.output(CLK1, GPIO.HIGH)
-                                sleep(period/2)
+                                sleep(period/2)'''
+                            #We need to turn on clock again
+                            dateTimeFunction(False)
                             screenState = True
                
     if (GPIO.input(Y4)==1):
@@ -414,13 +407,27 @@ def readKeypad(rowNum,char, loadValues):
 
 def fourStageLoad(stringTime, loadVals, clockMode): 
     global pureNumHash
-    
+    #Boolean to check if hours is pm
+    pm = False
     
     #Index for the informaion we need 
     if clockMode : 
         chars = [char for char in stringTime]
         print(chars)
         vals = [11, 12, 14, 15]
+
+        hours = int(str(chars[11] + chars[12]))
+        if hours > 12: 
+            pm = True
+            hours = (hours - 12) #This will keep it not military time
+            if hours < 10: 
+                hours = "0" + str(hours)
+            else: 
+                hours = str(hours)
+            print(hours)
+            chars[11] = hours[0]
+            chars[12] = hours[1]
+            
     else: 
         chars = pureNumHash
         vals = loadVals
@@ -432,7 +439,7 @@ def fourStageLoad(stringTime, loadVals, clockMode):
 
     
     for j in range(4):
-        print(j)
+        
         if chars[vals[j]] == "1":
             clear()
             loadOne(timeGPIO[j])
@@ -466,8 +473,111 @@ def fourStageLoad(stringTime, loadVals, clockMode):
         elif chars[vals[j]] == "*":
             clear()
             loadStar(timeGPIO[j])
+
+        #Add dot on second display: 
+        if pm and j == 1: 
+            loadStar(timeGPIO[j])
     
     
+def dateTimeFunction(compare): 
+    global timeStart
+    global programStart
+    global queue
+    now = datetime.now()
+    now = str(now)
+
+    #If we need to compare: 
+    if compare: 
+        cmp = [char for char in str(now)]
+        cmp = cmp[11:16:1]
+    
+
+        #Now lets compare values: 
+    
+        if cmp != timeStart or programStart:
+            #this is what updates the thing 
+            fourStageLoad(now, queue, True)
+            timeStart = cmp
+            programStart = False
+    else: 
+        #UPdates the clocks
+        fourStageLoad(now, queue, True)
+
+    
+def manualClock(): 
+    global timeStart
+    global queueCounter
+    global queue
+    counter = 0
+    queue =  [0 ,0, 0, 0]
+    queueCounter = 0
+    clkArr = [CLK1, CLK2, CLK3, CLK4]
+    returnArr = [0 for x in range(20)]
+
+    while queueCounter < 4:
+        readKeypad(rows[counter%4], hash[counter%4], True)
+        counter+=1
+        if queueCounter < 4: 
+            #Do some flash code
+            for i in everyone:
+                GPIO.output(i, GPIO.LOW)
+                GPIO.output(clkArr[queueCounter], GPIO.LOW)
+                sleep(period/2)
+                GPIO.output(clkArr[queueCounter], GPIO.HIGH)
+                sleep(period/2)
+
+            
+            #turn it bac on 
+            loadZero(clkArr[queueCounter])
+
+
+    #We need to create variables to handle the math 
+    seconds = 0
+    minutes = (queue[2:4:1])
+    hours = queue[0:2:1]
+     
+    print("hrs", hours)
+    if ((hours[0] > 2) or (hours[0] == 2 and hours[1] > 4) or minutes[0] > 5): 
+        print("incorrect input")
+
+        manualClock()
+
+    minutes = int("".join(map(str, minutes)))
+    hours = int("".join(map(str, hours)))
+    while True:
+
+        #Sleep for 60s
+        sleep(1)
+
+        #Now we need to handle the math for this:
+        if minutes + 1 == 60:  
+            minutes = 0
+            hours = (hours + 1)%24
+        else: 
+            minutes += 1      
+
+        print("hours: ", hours)
+        print("mins", minutes)  
+
+        if hours < 10: 
+            inputHours = "0" + str(hours)
+        else: 
+            inputHours = str(hours)
+        inputHours = [x for x in inputHours]
+        returnArr[11] = inputHours[0]
+        returnArr[12] = inputHours[1]
+       
+        if minutes < 10:  
+            inputMinutes = "0" + str(minutes)
+        else: 
+            inputMinutes = str(minutes)
+        inputMinutes = [x for x in inputMinutes]
+        returnArr[14] = inputMinutes[0]
+        returnArr[15] = inputMinutes[1]
+
+        fourStageLoad(returnArr, queue, True)
+        
+
 
 
 
@@ -478,21 +588,35 @@ loadZero(CLK1)
 loadZero(CLK2)
 loadZero(CLK3)
 loadZero(CLK4)
-while True: 
 
-    
+#Intialize the time at the beginning of the fucntion 
+timeStart = datetime.now()
+timeStart = [char for char in str(timeStart)]
+timeStart = timeStart[11:16:1]
 
-    
-    now = datetime.now()
-    now = str(now)
+programStart = True
+print(timeStart)
 
-    #fourStageLoad(now, queue, False)
-    
 
-    readKeypad(rows[counter%4], hash[counter%4], True)
+
+print("starting location")
+print(timeStart)
+
+manualClock()
+
+
+#No need for running while loo while running manual clock
+'''while True: 
+
+    if screenState: 
+        #dateTimeFunction(True)
+        manualClock()
+    readKeypad(rows[counter%4], hash[counter%4], False)
+
+    counter += 1'''
         
 
-    counter+=1
+
 
 
 
