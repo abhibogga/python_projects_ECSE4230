@@ -823,7 +823,7 @@ print(timeStart)
 loadValue = False
 loadWord = True
 
-manualClock_pass()
+
 while True: 
 
    
