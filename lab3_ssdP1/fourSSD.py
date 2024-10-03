@@ -110,6 +110,7 @@ queueCounter = 0
 #Arrray to hold all the values of the words
 wordQueue = []
 wordQueueCounter = 0
+bCounter = 0
 
 
 #load 0's into queue, when we start the program we should load 0s
@@ -133,13 +134,14 @@ def loadNums(num):
         #print(queue)
 
 def loadWords(letter):
+    print(letter)
     global wordQueue
     global wordQueueCounter
     if not (letter == "#"):
         #first we want to pop left   
-        queue[queueCounter%4] = letter
+        wordQueue[wordQueueCounter%4] = letter
         print("wordQueue", wordQueue)
-        queueCounter += 1
+        wordQueueCounter += 1
         #print(queue
 
 
@@ -266,7 +268,8 @@ def loadD(clk):
         sleep(period/2)
 
 
-def readKeypad(rowNum,char, loadValues,loadWords):
+def readKeypad(rowNum,char, loadValues,loadWord):
+    global bCounter
     curVal = ""
     global preVal
     pressed = False
@@ -345,7 +348,7 @@ def readKeypad(rowNum,char, loadValues,loadWords):
                 curVal=char[2]
                 print(curVal)
                 pressed = True
-                if curVal == "3":
+                if curVal == "3": 
                     clear()
                     preVal = three
                     if loadValues: 
@@ -407,29 +410,40 @@ def readKeypad(rowNum,char, loadValues,loadWords):
     if (GPIO.input(Y4)==1):
         ledON = False
         while (GPIO.input(Y4)==1):
-            if (pressed and loadWords == False):
-                GPIO.output(led, GPIO.HIGH)
+            if (pressed):
+                pass
                 
             else: 
-                curVal=char[3]
-                print(curVal)
-                pressed = True
-                if curVal == "A" and loadValues:
-                    clear()
-                    preVal = a
-                    loadWords("A")
-                elif curVal == "B" and loadValues:
-                    clear()
-                    preVal = b
-                    loadWords("B")
-                elif curVal == "C" and loadValues:
-                    clear()
-                    preVal = c
-                    loadWords("C")
-                elif curVal == "D" and loadValues:
-                    clear()
-                    preVal = d
-                    loadWords("A")
+                if (not loadValues and not loadWord): 
+                    curVal=char[3]
+                    print(curVal)
+                    pressed = True
+                    if curVal == "B":
+                        bCounter += 1
+                        #print("bcounter", bCounter)
+                    else: 
+                        GPIO.output(led, GPIO.HIGH)
+                
+                else: 
+                    curVal=char[3]
+                    print(curVal)
+                    pressed = True
+                    if curVal == "A":
+                        clear()
+                        preVal = a
+                        loadWords("A")
+                    elif curVal == "B":
+                        clear()
+                        preVal = b
+                        loadWords("B")
+                    elif curVal == "C":
+                        clear()
+                        preVal = c
+                        loadWords("C")
+                    elif curVal == "D":
+                        clear()
+                        preVal = d
+                        loadWords("A")
     GPIO.output(rowNum,GPIO.LOW)
     GPIO.output(led, GPIO.LOW)
 
@@ -514,9 +528,35 @@ def dateTimeFunction(compare):
     global timeStart
     global programStart
     global queue
+    global wordQueue
+    global wordQueueCounter
+    global bCounter
+    global loadValue
+    global loadWord
     now = datetime.now()
     now = str(now)
-
+    
+    if bCounter >= 3:
+        print("hit 3")
+        for j in timeGPIO: 
+            for i in everyone:
+                GPIO.output(i, GPIO.LOW)
+                GPIO.output(j, GPIO.LOW)
+                sleep(period/2)
+                GPIO.output(j, GPIO.HIGH)
+                sleep(period/2)
+        loadZero(CLK1)
+        loadZero(CLK2)
+        loadZero(CLK3)
+        loadZero(CLK4)
+        bCounter = 0
+        queue = [0,0,0,0]
+        wordQueue = [0,0,0,0]
+        wordQueueCounter = 0
+        loadValue = False
+        loadWord = True
+        return
+    
     #If we need to compare: 
     if compare: 
         cmp = [char for char in str(now)]
@@ -526,6 +566,7 @@ def dateTimeFunction(compare):
         #Now lets compare values: 
     
         if cmp != timeStart or programStart:
+            bCounter = 0
             #this is what updates the thing 
             fourStageLoad(now, queue, True)
             timeStart = cmp
@@ -539,6 +580,11 @@ def manualClock():
     global timeStart
     global queueCounter
     global queue
+    global bCounter
+    global wordQueue
+    global wordQueueCounter
+    global loadValue
+    global loadWord
     counter = 0
     queue =  [0 ,0, 0, 0]
     queueCounter = 0
@@ -549,6 +595,18 @@ def manualClock():
     while queueCounter < 4:
         readKeypad(rows[counter%4], hash[counter%4], True, False)
         counter+=1
+
+        if queue[0] > 2: 
+            GPIO.output(led, GPIO.HIGH)
+            sleep(.5)
+            manualClock()
+
+        if queue[2] > 5: 
+            GPIO.output(led, GPIO.HIGH)
+            sleep(.5)
+            manualClock()
+
+            
         if queueCounter < 4: 
             #Do some flash code
             for i in everyone:
@@ -561,6 +619,8 @@ def manualClock():
             
             #turn it bac on 
             loadZero(clkArr[queueCounter])
+        
+        
    
     #We need to create variables to handle the math 
     seconds = 0
@@ -570,12 +630,33 @@ def manualClock():
     print("hrs", hours)
     if ((hours[0] > 2) or (hours[0] == 2 and hours[1] > 4) or minutes[0] > 5): 
         print("incorrect input")
-
         manualClock()
 
     minutes = int("".join(map(str, minutes)))
     hours = int("".join(map(str, hours)))
     while True:
+        
+        if bCounter >= 3:
+            print("hit 3")
+            for j in timeGPIO: 
+                for i in everyone:
+                    GPIO.output(i, GPIO.LOW)
+                    GPIO.output(j, GPIO.LOW)
+                    sleep(period/2)
+                    GPIO.output(j, GPIO.HIGH)
+                    sleep(period/2)
+            loadZero(CLK1)
+            loadZero(CLK2)
+            loadZero(CLK3)
+            loadZero(CLK4)
+            bCounter = 0
+            queue = [0,0,0,0]
+            wordQueue = [0,0,0,0]
+            wordQueueCounter = 0
+            loadValue = False
+            loadWord = True
+            return
+    
         #This is the code to recognize the hashtag
         counter+=1
         readKeypad(rows[counter%4], hash[counter%4], False, False)
@@ -584,7 +665,7 @@ def manualClock():
         #Sleep for 60s
         sleep(.05)
         sleepCounter += 1
-        if sleepCounter == 20:     
+        if sleepCounter == 200:     
             #Now we need to handle the math for this:
             if minutes + 1 == 60:  
                 minutes = 0
@@ -619,7 +700,10 @@ def manualClock_pass():
     global timeStart
     global queueCounter
     global queue
+    global wordQueue
     counter = 0
+    start = 0
+    end = 0
     queue =  [0 ,0, 0, 0]
     queueCounter = 0
     clkArr = [CLK1, CLK2, CLK3, CLK4]
@@ -629,6 +713,18 @@ def manualClock_pass():
     while queueCounter < 4:
         readKeypad(rows[counter%4], hash[counter%4], True, False)
         counter+=1
+
+        if queue[0] > 2: 
+            GPIO.output(led, GPIO.HIGH)
+            sleep(.5)
+            manualClock()
+
+        if queue[2] > 5: 
+            GPIO.output(led, GPIO.HIGH)
+            sleep(.5)
+            manualClock()
+
+            
         if queueCounter < 4: 
             #Do some flash code
             for i in everyone:
@@ -641,6 +737,8 @@ def manualClock_pass():
             
             #turn it bac on 
             loadZero(clkArr[queueCounter])
+
+
    
     #We need to create variables to handle the math 
     seconds = 0
@@ -659,13 +757,14 @@ def manualClock_pass():
         #This is the code to recognize the hashtag
         
         #every second
-
-        for k in range(1653958): #every .1 seconds
+        
+        for k in range(1890958): #every .1 seconds og Value: 1653958
             pass
+        
         sleepCounter += 1
         counter+=1
         readKeypad(rows[counter%4], hash[counter%4], False, False)   
-        if sleepCounter == 10:     
+        if sleepCounter == 600:     
             #Now we need to handle the math for this:
             if minutes + 1 == 60:  
                 minutes = 0
@@ -721,12 +820,31 @@ print(timeStart)
 
 
 #No need for running while loo while running manual clock
+loadValue = False
+loadWord = True
+
+manualClock_pass()
 while True: 
 
-    
-    readKeypad(rows[counter%4], hash[counter%4], False, True)
-    
+   
+    readKeypad(rows[counter%4], hash[counter%4], loadValue, loadWord)
     counter += 1
+    
+    if wordQueue[0] == "A": #This means enter automatic datetime mode
+        #This combination of booleans means that we need to recognize triple B
+        #print("in here")
+        wordQueueCounter = 0
+        loadValue = False
+        loadWord = False
+        timeGPIO = [CLK1, CLK2, CLK3, CLK4]
+        dateTimeFunction(True)
+    
+    if wordQueue[0] == "B":
+        print("in here")
+        wordQueueCounter = 0
+        loadValue = False
+        loadWord = False
+        manualClock()
         
 
 
