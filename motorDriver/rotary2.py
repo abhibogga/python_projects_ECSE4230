@@ -63,6 +63,7 @@ while True:
         while sw == 0:
             sw = GPIO.input(switchPin)
             pass
+        time.sleep(.1)
     
     
         
