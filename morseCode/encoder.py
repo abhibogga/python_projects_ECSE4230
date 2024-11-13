@@ -12,12 +12,9 @@ led_pin = 18
 speaker_pin = 24  
 frequency = 500  
 
-<<<<<<< HEAD
 global morseString
 morseString = ""
 
-=======
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
 morseCode = {
     'a': '.-',     # .-
     'b': '-...',   # -...
@@ -103,27 +100,15 @@ GPIO.setup(led_pin, GPIO.OUT)
 GPIO.setup(speaker_pin, GPIO.OUT)
 speaker_pwm = GPIO.PWM(speaker_pin, frequency)
 
-<<<<<<< HEAD
-
-=======
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
 #Function for user input for unit length
 def unit_length_input():
     while True:
         try:
-<<<<<<< HEAD
             unit_length = float(input("Enter your desired length of a Morse Code unit (.001 to 2 seconds): "))
             if unit_length >= 0.001 and unit_length <= 2:
                 return unit_length
             else:
                 print("Please enter a number within the range.")
-=======
-            unit_length = float(input("Enter your desired length of a Morse Code unit (in seconds): "))
-            if unit_length > 0:
-                return unit_length
-            else:
-                print("Please enter a positive number.")
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
         except ValueError:
             print("Invalid input. Enter a numeric value.")
 
@@ -136,11 +121,7 @@ def output_morse_code(symbol, unit_length):
     if symbol == '.':
         duration = unit_length
     else:
-<<<<<<< HEAD
         duration = 3 * unit_length
-=======
-        3 * unit_length
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
     
     GPIO.output(led_pin, GPIO.HIGH)
     speaker_pwm.start(50)  #50% duty cycle for speaker
@@ -161,7 +142,6 @@ def output_morse_code(symbol, unit_length):
 
 #Sending morse code to be outputted on speaker
 def send_morse_code(message, unit_length):
-<<<<<<< HEAD
     #WE NEED TO HARD CODE ATTENTION AND OUT 
     #Sending units based on char
     for char in message:
@@ -193,25 +173,6 @@ def send_morse_code(message, unit_length):
 
 #Write to file method
 def writeToFile(messages, fileName, unit_length, morseString):
-=======
-    
-    #Start with attention
-    print("- . - . - | attention")
-
-    #Sending units based on char
-    for char in message:
-        if char == '.':
-            output_morse_code('.', unit_length)
-        elif char == '-':
-            output_morse_code('-', unit_length)
-        elif char == ' ':
-            sleep(3 * unit_length) 
-
-    sleep(7 * unit_length) 
-
-#Write to file method
-def writeToFile(messages, fileName, unit_length):
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
     #First thing we need to do is write the attention line
     with open(fileName, "w") as file:
         file.write("- . - . - | attention\n")
@@ -219,7 +180,6 @@ def writeToFile(messages, fileName, unit_length):
         #Writing words in message 
         for message in messages:
             is_first_word = True
-<<<<<<< HEAD
             messageLen = len(message.split(" "))
             #Splits message into words and breaks down into letters
             for index, word in enumerate(message.split()):
@@ -240,25 +200,10 @@ def writeToFile(messages, fileName, unit_length):
                     
 
 
-=======
-            
-            #Splits message into words and breaks down into letters
-            for word in message.split():
-                returnString = ""
-                letters = list(word)
-                
-                #Convert each letter from morseCode and creates the word
-                for letter in letters:
-                    returnString += morseCode[letter]
-                    #Check if letter is not the last in the word
-                    if letter != letters[-1]:
-                        returnString += " "  
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
 
                 #Checks if it's not first word, add 7 spaces
                 if not is_first_word:
                     file.write("       ")  
-<<<<<<< HEAD
 
                 is_first_word = False
                 
@@ -274,19 +219,6 @@ def writeToFile(messages, fileName, unit_length):
             
             
     return morseString
-=======
-                
-                #Translation passing the if condition
-                file.write(returnString + " | " + word + "\n")
-
-                #Play morse code on speaker
-                output_morse_code(returnString, unit_length)
-                
-                is_first_word = False
-
-            #End message with "out" and move to next line
-            file.write(". - . - . | out\n")
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
 
 #Read input file
 with open(inputPath) as file:
@@ -294,7 +226,6 @@ with open(inputPath) as file:
 
 unit_length = unit_length_input()
 
-<<<<<<< HEAD
 #Write messages to output file
 try:
     string = (writeToFile(lines, outputPath, unit_length, morseString))
@@ -304,11 +235,3 @@ try:
 finally:
     GPIO.cleanup()
 
-=======
-
-#Write messages to output file
-try:
-    writeToFile(lines, outputPath, unit_length)
-finally:
-    GPIO.cleanup()
->>>>>>> c72873592aa458a1a5e89ca5b0b41d0548ce4791
